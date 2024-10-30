@@ -10,7 +10,6 @@ import os
 logging.basicConfig(filename="log/app.log", level=logging.INFO)
 log = logging.getLogger()
 
-# Instâncias de extensões
 db = SQLAlchemy()
 migrate = Migrate()
 auth = HTTPBasicAuth()
@@ -22,13 +21,9 @@ def create_app():
     migrate.init_app(app, db)
     
     with app.app_context():
-        # Importa os módulos necessários
         from app import models, views, admin  
 
-        # Cria o banco de dados, se não existir
         db.create_all()
-
-        # Cria o usuário administrativo padrão, se não existir
         create_admin_user()
     
     return app
@@ -41,7 +36,6 @@ def create_admin_user():
     admin_password = os.environ.get("ADMIN_PASSWORD", "admin_password")
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@example.com")
 
-    # Verifica se o usuário administrador já existe
     if not Profile.query.filter_by(username=admin_username).first():
         user = Profile(
             username=admin_username,
