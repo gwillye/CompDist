@@ -1,0 +1,20 @@
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: compdist
+      MYSQL_DATABASE: compdist
+      MYSQL_USER: compdist
+    volumes:
+      - ./docker/start_db.sql:/docker-entrypoint.init.d/start.sql
+
+  app:
+    build: .
+    ports:
+      - 8080:8080
+    volumes:
+      - compdist:/instance
+
+volumes:
+  compdist:
