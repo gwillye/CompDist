@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify
+import logging, json
+from flask import Blueprint, jsonify, Response
 from .basic_auth import auth
 from .controller import UserController
 
@@ -9,5 +10,8 @@ userController = UserController()
 @app.route('/')
 @auth.login_required
 def index():
-    response = userController.get_user()
+    user = userController.get_user()
+    message_info = f"Usuário {user}, acessou o index."
+    response = {"success": message_info}
+    logging.info(message_info)
     return jsonify(response)
