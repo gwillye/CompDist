@@ -1,20 +1,50 @@
 services:
   db:
-    image: mysql
+    image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: compdist
       MYSQL_DATABASE: compdist
       MYSQL_USER: compdist
+      MYSQL_PASSWORD: compdist
     volumes:
-      - ./docker/start_db.sql:/docker-entrypoint.init.d/start.sql
+      - ./docker/start_db.sql:/docker-entrypoint-initdb.d/start.sql
+      - compdistdb:/var/lib/mysql
+    networks:
+      - compdist
 
-  app:
+  app_1:
     build: .
+    restart: always
+    command: ["./docker/wait-for-it.sh", "db:3306", "--timeout=30", "--", "python", "server.py"]
+    env_file:
+      - ./docker/.env
     ports:
       - 8080:8080
     volumes:
-      - compdist:/instance
+      - compdistlog:/usr/src/app/log
+      - compdistsqlite:/usr/src/app/instance
+    networks:
+      - compdist
+    depends_on:
+      - db
+  # app com acesso ao sqlite
+  app_2:
+    build: .
+    restart: always
+    ports:
+      - 8081:8080
+    volumes:
+      - compdistlog:/usr/src/app/log
+      - compdistsqlite:/usr/src/app/instance
+    networks:
+      - compdist
 
 volumes:
+  compdistlog:
+  compdistdb:
+  compdistsqlite:
+
+networks:
   compdist:
+    driver: bridge

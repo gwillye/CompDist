@@ -2,3 +2,7 @@
 .idea
 
 .env
+
+/docker/.env
+/app/__pycache__
+log/**/*.*
