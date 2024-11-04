@@ -30,7 +30,7 @@ services:
       - db
   # app com acesso ao sqlite
   app_2:
-    build: .
+    image: gandalfcrypto/compdistapp:1.0.0
     restart: always
     ports:
       - 8081:8080
